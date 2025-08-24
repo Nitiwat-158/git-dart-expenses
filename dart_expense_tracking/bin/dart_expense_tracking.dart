@@ -1,5 +1,12 @@
-import 'package:dart_expense_tracking/dart_expense_tracking.dart' as dart_expense_tracking;
+void showAll(){
 
-void main(List<String> arguments) {
-  print('Hello world: ${dart_expense_tracking.calculate()}!');
+}
+
+void totalpaid(){
+
+}
+
+void main() {
+  showAll();
+  totalpaid();
 }
