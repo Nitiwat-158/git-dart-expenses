@@ -16,6 +16,15 @@ app.get('/expense', (_req, res) => {
     })
 });
 
+app.get('/users', (_req, res) => {
+    const sql = "SELECT * FROM users";
+    con.query(sql, function(err, results) {
+        if(err) {
+            return res.status(500).send("Database server error");
+        }
+        res.json(results);
+    })
+});
 
 // ---------- Server starts here ---------
 const PORT = 3000;
