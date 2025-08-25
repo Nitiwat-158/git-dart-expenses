@@ -26,6 +26,15 @@ app.get('/users', (_req, res) => {
     })
 });
 
+app.get('/expenses/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const sql = "SELECT * FROM expense WHERE user_id = ?";
+    con.query(sql, [userId], (err, results) => {
+        if (err) return res.status(500).send("Database server error");
+        res.json(results);
+    });
+});
+
 // ---------- Server starts here ---------
 const PORT = 3000;
 app.listen(PORT, () => {
