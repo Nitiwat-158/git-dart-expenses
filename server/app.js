@@ -53,10 +53,16 @@ app.get('/users', (_req, res) => {
 });
 
 // 3. Show today’s expenses
-app.get('/expenses/today/:user_id', (_req, res) => {
-    const sql = "SELECT * FROM expense WHERE DATE(date) = CURDATE()";
-    con.query(sql, (err, results) => {
-        if (err) return res.status(500).send("Database server error");
+app.get('/expenses/today/:user_id', (req, res) => {
+    const userId = req.params.user_id;
+    const today = moment().format('YYYY-MM-DD');
+    const sql = `
+        "SELECT * FROM expense
+        WHERE user_id = ? AND DATE(date) = ?
+        ORDER BY date
+    `;
+    con.query(sql, [userId, today], (err, results) => {
+        if (err) return res.status(500).send("Database error");
         res.json(results);
     });
 });
