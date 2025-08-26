@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const con = require('./db');
+const bcrypt = require('bcrypt');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -8,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 // login
 app.post('/login', (req, res) => {
     const {username, password} = req.body;
-    const sql = "SELECT id, password FROM user WHERE username = ?";
+    const sql = "SELECT id, password FROM users WHERE username = ?";
     con.query(sql, [username], function(err, results) {
         if(err) {
             return res.status(500).send("Database server error");
