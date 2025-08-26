@@ -6,7 +6,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 1. Show all expenses
-app.get('/expense', (_req, res) => {
+app.get('/expenses', (_req, res) => {
     const sql = "SELECT * FROM expense";
     con.query(sql, function (err, results) {
         if (err) {
