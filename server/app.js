@@ -31,7 +31,7 @@ app.post('/login', (req, res) => {
 });
 
 // 1. Show all expenses
-app.get('/expenses', (_req, res) => {
+app.get('/expenses/:user_id', (_req, res) => {
     const sql = "SELECT * FROM expense";
     con.query(sql, function (err, results) {
         if (err) {
@@ -53,7 +53,7 @@ app.get('/users', (_req, res) => {
 });
 
 // 3. Show today’s expenses
-app.get('/expenses/today', (_req, res) => {
+app.get('/expenses/today/:user_id', (_req, res) => {
     const sql = "SELECT * FROM expense WHERE DATE(date) = CURDATE()";
     con.query(sql, (err, results) => {
         if (err) return res.status(500).send("Database server error");
