@@ -35,8 +35,8 @@ Future<int?> login() async {
 }
 
 // ---------------- Features ----------------
-Future<void> getAllExpenses(int userId) async {
-  final url = Uri.parse('http://localhost:3000/expenses/$userId');
+Future<void> getAllExpenses(int id) async {
+  final url = Uri.parse('http://localhost:3000/expenses/$id');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
