@@ -1,43 +1,77 @@
 const express = require('express');
 const app = express();
+const con = require('./db');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const con = require('./db');
-
+// 1. Show all expenses
 app.get('/expense', (_req, res) => {
     const sql = "SELECT * FROM expense";
-    con.query(sql, function(err, results) {
-        if(err) {
+    con.query(sql, function (err, results) {
+        if (err) {
             return res.status(500).send("Database server error");
         }
         res.json(results);
     })
 });
 
+// 2. Show all users
 app.get('/users', (_req, res) => {
     const sql = "SELECT * FROM users";
-    con.query(sql, function(err, results) {
-        if(err) {
+    con.query(sql, function (err, results) {
+        if (err) {
             return res.status(500).send("Database server error");
         }
         res.json(results);
     })
 });
 
-app.get('/expenses/:userId', (req, res) => {
-    const userId = req.params.userId;
-    const sql = "SELECT * FROM expense WHERE user_id = ?";
-    con.query(sql, [userId], (err, results) => {
+// 3. Show today’s expenses
+app.get('/expenses/today', (_req, res) => {
+    const sql = "SELECT * FROM expense WHERE DATE(date) = CURDATE()";
+    con.query(sql, (err, results) => {
         if (err) return res.status(500).send("Database server error");
         res.json(results);
     });
 });
+
+// 4. Search expenses by keyword
+app.get('/expenses/search/:keyword', (req, res) => {
+    const keyword = `%${req.params.keyword}%`;
+    const sql = "SELECT * FROM expense WHERE description LIKE ?";
+    con.query(sql, [keyword], (err, results) => {
+        if (err) return res.status(500).send("Database server error");
+        if (results.length === 0) return res.send("No items found with that keyword");
+        res.json(results);
+    });
+});
+
+// 5. Add new expense
+app.post('/expenses', (req, res) => {
+    const { user_id, description, amount } = req.body;
+    const sql = "INSERT INTO expense (user_id, description, amount, date) VALUES (?, ?, ?, NOW())";
+    con.query(sql, [user_id, description, amount], (err, result) => {
+        if (err) return res.status(500).send("Database server error");
+        res.json({ message: "Expense added", id: result.insertId });
+    });
+});
+
+// 6. Delete expense by ID
+app.delete('/expenses/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "DELETE FROM expense WHERE id = ?";
+    con.query(sql, [id], (err, result) => {
+        if (err) return res.status(500).send("Database server error");
+        if (result.affectedRows === 0) return res.status(404).send("Expense not found");
+        res.json({ message: "Expense deleted", id });
+    });
+});
+
 
 // ---------- Server starts here ---------
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log('Server is running at ' + PORT);
 });
-
+const con = require('./db');
