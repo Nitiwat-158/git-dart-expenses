@@ -24,7 +24,9 @@ Future<int?> login() async {
   if (response.statusCode == 200) {
     final result = json.decode(response.body);
     print(result["message"]);
-    return result["userId"];
+    final loginData = jsonDecode(response.body);
+    final int userId = loginData['userId'];
+    return userId;
   } else if (response.statusCode == 401 || response.statusCode == 500) {
     print(response.body);
     return null;
@@ -35,8 +37,8 @@ Future<int?> login() async {
 }
 
 // ---------------- Features ----------------
-Future<void> getAllExpenses(int id) async {
-  final url = Uri.parse('http://localhost:3000/expenses/$id');
+Future<void> getAllExpenses(int userId) async {
+  final url = Uri.parse('http://localhost:3000/expenses/$userId');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
