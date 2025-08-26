@@ -32,7 +32,7 @@ app.post('/login', (req, res) => {
 
 // 1. Show all expenses
 app.get('/expenses/:user_id', (_req, res) => {
-    const sql = "SELECT * FROM expense";
+    const sql = "SELECT * FROM expense WHERE user_id = ? ORDER BY date";
     con.query(sql, function (err, results) {
         if (err) {
             return res.status(500).send("Database server error");
