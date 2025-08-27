@@ -31,9 +31,10 @@ app.post('/login', (req, res) => {
 });
 
 // 1. Show all expenses
-app.get('/expenses/:user_id', (_req, res) => {
+app.get('/expenses/:user_id', (req, res) => {
+    const userId = req.params.user_id;
     const sql = "SELECT * FROM expense WHERE user_id = ? ORDER BY date";
-    con.query(sql, function (err, results) {
+    con.query(sql, [userId], function (err, results) {
         if (err) {
             return res.status(500).send("Database server error");
         }
@@ -55,13 +56,12 @@ app.get('/users', (_req, res) => {
 // 3. Show today’s expenses
 app.get('/expenses/today/:user_id', (req, res) => {
     const userId = req.params.user_id;
-    const today = moment().format('YYYY-MM-DD');
     const sql = `
-        "SELECT * FROM expense
-        WHERE user_id = ? AND DATE(date) = ?
+        SELECT * FROM expense
+        WHERE user_id = ? AND DATE(date) = CURDATE()
         ORDER BY date
     `;
-    con.query(sql, [userId, today], (err, results) => {
+    con.query(sql, [userId], (err, results) => {
         if (err) return res.status(500).send("Database error");
         res.json(results);
     });
@@ -80,9 +80,9 @@ app.get('/expenses/search/:keyword', (req, res) => {
 
 // 5. Add new expense
 app.post('/expenses', (req, res) => {
-    const { user_id, description, amount } = req.body;
-    const sql = "INSERT INTO expense (user_id, description, amount, date) VALUES (?, ?, ?, NOW())";
-    con.query(sql, [user_id, description, amount], (err, result) => {
+    const { user_id, item, paid } = req.body;
+    const sql = "INSERT INTO expense (user_id, item, paid, date) VALUES (?, ?, ?, NOW())";
+    con.query(sql, [user_id, item, paid], (err, result) => {
         if (err) return res.status(500).send("Database server error");
         res.json({ message: "Expense added", id: result.insertId });
     });

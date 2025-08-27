@@ -58,7 +58,7 @@ Future<void> getAllExpenses(int userId) async {
 }
 
 Future<void> getTodayExpenses(int userId) async {
-  final url = Uri.parse('http://localhost:3000/expenses/$userId/today');
+  final url = Uri.parse('http://localhost:3000/expenses/today/$userId');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
@@ -68,7 +68,9 @@ Future<void> getTodayExpenses(int userId) async {
     for (var exp in expenses) {
       final dt = DateTime.tryParse(exp['date'].toString());
       final dtLocal = dt?.toLocal();
-      print("${exp['id']}. ${exp['item']} : ${exp['paid']}฿ @ ${dtLocal ?? exp['date']}");
+      print(
+        "${exp['id']}. ${exp['item']} : ${exp['paid']}฿ @ ${dtLocal ?? exp['date']}",
+      );
       total += int.tryParse(exp['paid'].toString()) ?? 0;
     }
     print("Total expenses = $total฿\n");
@@ -96,8 +98,8 @@ Future<void> searchExpenses(int userId) async {
   }
 
   final results = expenses.where((e) {
-    final item = (e['item'] ?? '').toString().toLowerCase();
-    return item.contains(keyword.toLowerCase());
+    final desc = (e['item'] ?? '').toString().toLowerCase();
+    return desc.contains(keyword.toLowerCase());
   }).toList();
 
   if (results.isEmpty) {
@@ -106,7 +108,9 @@ Future<void> searchExpenses(int userId) async {
     for (var e in results) {
       final dt = DateTime.tryParse(e['date'].toString());
       final dtLocal = dt?.toLocal();
-      print("${e['id']}. ${e['item']} : ${e['paid']}฿ @ ${dtLocal ?? e['date']}");
+      print(
+        "${e['id']}. ${e['item']} : ${e['paid']}฿ @ ${dtLocal ?? e['date']}",
+      );
     }
     print("");
   }
@@ -130,7 +134,7 @@ Future<void> addExpense(int userId) async {
     return;
   }
 
-  final url = Uri.parse('http://localhost:3000/expenses/add/$userId');
+  final url = Uri.parse('http://localhost:3000/expenses');
   final body = jsonEncode({
     "user_id": userId,
     "item": item,
@@ -143,7 +147,7 @@ Future<void> addExpense(int userId) async {
     body: body,
   );
 
-  if (response.statusCode == 201) {
+  if (response.statusCode == 200) {
     print("Inserted!\n");
   } else {
     print("Failed to add expense. Error: ${response.statusCode}\n");
@@ -161,7 +165,7 @@ Future<void> deleteExpense(int userId) async {
     return;
   }
 
-  final url = Uri.parse('http://localhost:3000/expenses/delete/$userId/$expenseId');
+  final url = Uri.parse('http://localhost:3000/expenses/$expenseId');
   final response = await http.delete(url);
 
   if (response.statusCode == 200) {
